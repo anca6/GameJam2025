@@ -1167,13 +1167,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buttonsRoot: {fileID: 671964674}
+  startDelaySeconds: 0
+  useUnscaledTimeForDelay: 0
   timeLimitSeconds: 10
-  autoStartOnEnable: 1
   clickMask:
     serializedVersion: 2
     m_Bits: 4294967295
   raycastMaxDistance: 100
-  useUnscaledTime: 0
+  useUnscaledTimeForTimer: 0
   manageCursor: 0
   OnSolved:
     m_PersistentCalls:
@@ -1182,6 +1183,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   showTimerHud: 1
+  debugLogs: 1
 --- !u!1001 &677843327
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2608,6 +2610,9 @@ MonoBehaviour:
   jerkyDuration: 0.085
   jerkyMaxAngle: 1.75
   preCutPortion: 0.25
+  puzzle: {fileID: 671964675}
+  useOverrideDelay: 1
+  overrideDelaySeconds: 2
 --- !u!1 &1894021172
 GameObject:
   m_ObjectHideFlags: 0

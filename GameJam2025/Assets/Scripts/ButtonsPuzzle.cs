@@ -11,12 +11,16 @@ public class ButtonsPuzzle : MonoBehaviour
     [Tooltip("Leave empty to use this object as the root. All children are treated as buttons.")]
     public Transform buttonsRoot;
 
+    [Header("Start")]
+    [Tooltip("Delay between trigger call and the puzzle actually starting.")]
+    [Min(0f)] public float startDelaySeconds = 0f;
+    public bool useUnscaledTimeForDelay = false;
+
     [Header("Gameplay")]
     [Min(1f)] public float timeLimitSeconds = 10f;
-    public bool autoStartOnEnable = true;
-    public LayerMask clickMask = ~0;          // optional: set to a "Buttons" layer
+    public LayerMask clickMask = ~0;
     public float raycastMaxDistance = 100f;
-    public bool useUnscaledTime = false;      // set true if your game pauses Time.timeScale
+    public bool useUnscaledTimeForTimer = false;
 
     [Header("Cursor")]
     public bool manageCursor = true;
@@ -26,39 +30,61 @@ public class ButtonsPuzzle : MonoBehaviour
     public UnityEvent OnFailed;
 
     [Header("Debug / HUD")]
-    public bool showTimerHud = true;          // in-Game view timer
-    public bool debugLogs = true;             // master switch
-    [Tooltip("Log a timer heartbeat every X seconds (0 = off)")]
-    public float timerLogEverySeconds = 1f;
+    public bool showTimerHud = true;
+    public bool debugLogs = true;
 
     // internals
     readonly List<GameObject> _buttons = new();
     int _remaining;
     float _timeLeft;
     bool _running;
-
+    bool _armedOrStarted;
     CursorLockMode _prevLock;
     bool _prevVisible;
-    float _nextTimerLogAt;
-
-    void OnEnable()
-    {
-        if (autoStartOnEnable) StartPuzzle();
-    }
 
     void OnDisable()
     {
-        //RestoreCursor();
+        // don’t auto-restore cursor if you prefer global controller to handle it.
         _running = false;
-        if (debugLogs) Debug.Log($"[ButtonsPuzzle] Disabled. Running={_running}");
+        _armedOrStarted = false;
     }
 
-    /// <summary>Call this to (re)start the puzzle.</summary>
-    public void StartPuzzle()
+    // ----------------- PUBLIC API -----------------
+
+    /// <summary>Called by your pressure plate. Uses the serialized delay unless overrideDelay >= 0 is provided.</summary>
+    public void TriggerStart(float overrideDelay = -1f)
+    {
+        if (_armedOrStarted) { if (debugLogs) Debug.Log("[ButtonsPuzzle] Already armed/started."); return; }
+        _armedOrStarted = true;
+        float delay = (overrideDelay >= 0f) ? overrideDelay : startDelaySeconds;
+        StartCoroutine(Co_StartAfterDelay(delay));
+        if (debugLogs) Debug.Log($"[ButtonsPuzzle] Triggered. Will start in {delay:0.00}s.");
+    }
+
+    // ----------------- CORE -----------------
+
+    System.Collections.IEnumerator Co_StartAfterDelay(float delay)
+    {
+        if (delay > 0f)
+        {
+            if (useUnscaledTimeForDelay)
+            {
+                float t0 = Time.unscaledTime;
+                while (Time.unscaledTime - t0 < delay) yield return null;
+            }
+            else
+            {
+                yield return new WaitForSeconds(delay);
+            }
+        }
+        StartPuzzleNow();
+    }
+
+    void StartPuzzleNow()
     {
         if (!buttonsRoot) buttonsRoot = transform;
 
-        // collect ALL children (even inactive)
+        // collect all children (even inactive)
         _buttons.Clear();
         foreach (var t in buttonsRoot.GetComponentsInChildren<Transform>(true))
         {
@@ -66,7 +92,6 @@ public class ButtonsPuzzle : MonoBehaviour
             _buttons.Add(t.gameObject);
         }
 
-        // activate everything and count
         _remaining = 0;
         for (int i = 0; i < _buttons.Count; i++)
         {
@@ -76,10 +101,8 @@ public class ButtonsPuzzle : MonoBehaviour
             _remaining++;
         }
 
-        // timer + cursor
         _timeLeft = Mathf.Max(0.01f, timeLimitSeconds);
         _running = true;
-        _nextTimerLogAt = Time.time + Mathf.Max(0f, timerLogEverySeconds);
 
         if (manageCursor)
         {
@@ -91,12 +114,9 @@ public class ButtonsPuzzle : MonoBehaviour
 
         if (debugLogs)
         {
-            Debug.Log($"[ButtonsPuzzle] StartPuzzle → found {_buttons.Count} children under '{buttonsRoot.name}', activated {_remaining}, time={_timeLeft:0.00}s");
+            Debug.Log($"[ButtonsPuzzle] START → buttons:{_remaining}  time:{_timeLeft:0.00}s");
             for (int i = 0; i < _buttons.Count; i++)
-            {
-                var name = _buttons[i] ? _buttons[i].name : "(null)";
-                Debug.Log($"[ButtonsPuzzle]   [{i}] {name}");
-            }
+                Debug.Log($"[ButtonsPuzzle]   [{i}] {_buttons[i]?.name}");
         }
     }
 
@@ -104,43 +124,20 @@ public class ButtonsPuzzle : MonoBehaviour
     {
         if (!_running) return;
 
-        // countdown
-        float dt = useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime;
+        // timer
+        float dt = useUnscaledTimeForTimer ? Time.unscaledDeltaTime : Time.deltaTime;
         _timeLeft -= dt;
-
-        if (timerLogEverySeconds > 0f && Time.time >= _nextTimerLogAt)
-        {
-            _nextTimerLogAt = Time.time + timerLogEverySeconds;
-            if (debugLogs) Debug.Log($"[ButtonsPuzzle] Timer: {_timeLeft:0.00}s left | Remaining: {_remaining}");
-        }
-
-        if (_timeLeft <= 0f)
-        {
-            Fail();
-            return;
-        }
+        if (_timeLeft <= 0f) { Fail(); return; }
 
         // click to clear
-        if (MouseDownThisFrame())
+        if (MouseDownThisFrame() && TryHitButton(out GameObject hitGo))
         {
-            if (TryHitButton(out GameObject hitGo))
+            if (hitGo.activeSelf)
             {
-                if (hitGo.activeSelf)
-                {
-                    if (debugLogs) Debug.Log($"[ButtonsPuzzle] Clicked '{hitGo.name}' ✓");
-                    hitGo.SetActive(false);
-                    _remaining = Mathf.Max(0, _remaining - 1);
-                    if (debugLogs) Debug.Log($"[ButtonsPuzzle] Remaining after click: {_remaining}");
-                    if (_remaining == 0) Solve();
-                }
-                else if (debugLogs)
-                {
-                    Debug.Log($"[ButtonsPuzzle] Clicked '{hitGo.name}' but it was already inactive.");
-                }
-            }
-            else if (debugLogs)
-            {
-                Debug.Log("[ButtonsPuzzle] Click miss (no valid button under cursor).");
+                hitGo.SetActive(false);
+                _remaining = Mathf.Max(0, _remaining - 1);
+                if (debugLogs) Debug.Log($"[ButtonsPuzzle] Clicked '{hitGo.name}'. Remaining: {_remaining}");
+                if (_remaining == 0) Solve();
             }
         }
     }
@@ -149,8 +146,8 @@ public class ButtonsPuzzle : MonoBehaviour
     {
         if (!_running) return;
         _running = false;
-        //RestoreCursor();
-        if (debugLogs) Debug.Log($"[ButtonsPuzzle] SOLVED with {_timeLeft:0.00}s left 🎉");
+        if (manageCursor) { Cursor.lockState = _prevLock; Cursor.visible = _prevVisible; }
+        if (debugLogs) Debug.Log($"[ButtonsPuzzle] SOLVED with {_timeLeft:0.00}s left.");
         OnSolved?.Invoke();
     }
 
@@ -158,42 +155,29 @@ public class ButtonsPuzzle : MonoBehaviour
     {
         if (!_running) return;
         _running = false;
-        //RestoreCursor();
-        if (debugLogs) Debug.Log("[ButtonsPuzzle] FAILED (timer expired)");
+        if (manageCursor) { Cursor.lockState = _prevLock; Cursor.visible = _prevVisible; }
+        if (debugLogs) Debug.Log("[ButtonsPuzzle] FAILED (timer expired).");
         OnFailed?.Invoke();
     }
+
+    // ----------------- helpers -----------------
 
     bool TryHitButton(out GameObject go)
     {
         go = null;
         var cam = Camera.main;
-        if (!cam)
-        {
-            if (debugLogs) Debug.LogWarning("[ButtonsPuzzle] No Camera.main found for raycast.");
-            return false;
-        }
+        if (!cam) { if (debugLogs) Debug.LogWarning("[ButtonsPuzzle] No Camera.main."); return false; }
 
         Ray ray = cam.ScreenPointToRay(GetMousePosition());
         if (Physics.Raycast(ray, out var hit, raycastMaxDistance, clickMask, QueryTriggerInteraction.Collide))
         {
-            if (debugLogs) Debug.Log($"[ButtonsPuzzle] Raycast hit '{hit.transform.name}' on layer {hit.transform.gameObject.layer}");
-            // ensure the hit object is one of our buttons (or a child of one)
             for (int i = 0; i < _buttons.Count; i++)
             {
                 var b = _buttons[i];
                 if (!b) continue;
                 var tr = b.transform;
-                if (hit.transform == tr || hit.transform.IsChildOf(tr))
-                {
-                    go = b;
-                    return true;
-                }
+                if (hit.transform == tr || hit.transform.IsChildOf(tr)) { go = b; return true; }
             }
-            if (debugLogs) Debug.Log("[ButtonsPuzzle] Hit something, but it’s not in my buttons list.");
-        }
-        else if (debugLogs)
-        {
-            Debug.Log("[ButtonsPuzzle] Raycast missed everything.");
         }
         return false;
     }
@@ -201,13 +185,9 @@ public class ButtonsPuzzle : MonoBehaviour
     bool MouseDownThisFrame()
     {
 #if ENABLE_INPUT_SYSTEM
-        bool pressed = Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
-        if (debugLogs && pressed) Debug.Log("[ButtonsPuzzle] LMB down (New Input System).");
-        return pressed;
+        return Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame;
 #else
-        bool pressed = Input.GetMouseButtonDown(0);
-        if (debugLogs && pressed) Debug.Log("[ButtonsPuzzle] LMB down (Old Input Manager).");
-        return pressed;
+        return Input.GetMouseButtonDown(0);
 #endif
     }
 
@@ -220,10 +200,19 @@ public class ButtonsPuzzle : MonoBehaviour
 #endif
     }
 
-    // optional: call from other scripts to query remaining time
     public float GetTimeLeft() => Mathf.Max(0f, _timeLeft);
     public bool IsRunning() => _running;
 
-    // handy in Play mode: right-click component header S
-
+    void OnGUI()
+    {
+        if (!showTimerHud || !_running) return;
+        var label = $"Buttons: {_remaining}  |  Time: {_timeLeft:0.0}s";
+        var size = GUI.skin.label.CalcSize(new GUIContent(label));
+        var rect = new Rect(10, 10, size.x + 12, size.y + 8);
+        var prev = GUI.color;
+        GUI.color = new Color(0, 0, 0, 0.5f);
+        GUI.Box(rect, GUIContent.none);
+        GUI.color = prev; rect.x += 6; rect.y += 4;
+        GUI.Label(rect, label);
+    }
 }

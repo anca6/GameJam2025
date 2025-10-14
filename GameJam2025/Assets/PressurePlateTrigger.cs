@@ -33,6 +33,10 @@ public class PressurePlateTrigger : MonoBehaviour
     [Tooltip("What fraction happens BEFORE the cut (rest happens after).")]
     [Range(0.0f, 0.8f)] public float preCutPortion = 0.25f;
 
+    public ButtonsPuzzle puzzle;           // drag your puzzle here
+    public bool useOverrideDelay = false;
+    public float overrideDelaySeconds = 2f;
+
     // internals
     Rigidbody _rb;
     bool _playerInside;
@@ -69,12 +73,18 @@ public class PressurePlateTrigger : MonoBehaviour
             _hasOrigBlend = true;
         }
     }
+    
 
     void OnTriggerEnter(Collider other)
     {
         if (!IsPlayer(other)) return;
         _playerInside = true;
         LockAndShowInitial();
+
+        if (!puzzle) return;
+
+        if (useOverrideDelay) puzzle.TriggerStart(overrideDelaySeconds);
+        else puzzle.TriggerStart();
     }
 
     void OnTriggerExit(Collider other)
