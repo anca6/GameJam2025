@@ -1,5 +1,6 @@
-using UnityEngine;
+using FMODUnity;
 using Unity.Cinemachine;
+using UnityEngine;
 using BlendStyle = Unity.Cinemachine.CinemachineBlendDefinition.Styles;
 
 [RequireComponent(typeof(Collider))]
@@ -12,6 +13,10 @@ public class PressurePlateTrigger : MonoBehaviour
     public CinemachineCamera camB;
     [Tooltip("Main Camera’s CinemachineBrain")]
     public CinemachineBrain brain;
+
+    [Header("Events")]
+    public EventManagerGame eventManager;
+    public bool startEventsAfterLock = true;
 
     [Header("Behaviour")]
     public KeyCode toggleKey = KeyCode.E;
@@ -61,7 +66,7 @@ public class PressurePlateTrigger : MonoBehaviour
 
         if (brain)
         {
-            _origBlend = brain.DefaultBlend; // CM3
+            _origBlend = brain.DefaultBlend;
             _hasOrigBlend = true;
         }
     }
@@ -109,10 +114,13 @@ public class PressurePlateTrigger : MonoBehaviour
             _rb.angularVelocity = Vector3.zero;
         }
 
-        // LERP into first cutaway (do NOT touch brain blend here)
         gameplayCam.Priority = inactivePriority;
         _active = startWithCamA ? camA : camB;
         ApplyPriorities(_active);
+
+        // Start events now (each will arm and countdown with its own 3–5s delay)
+        if (startEventsAfterLock && eventManager)
+            eventManager.TriggerRandomEvents();
     }
 
     void Toggle()
