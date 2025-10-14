@@ -1,8 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using Unity.Cinemachine;
+
 
 #if UNITY_EDITOR
-    using UnityEditor;
+using UnityEditor;
 #endif
 
 public class FirstPersonController : MonoBehaviour
@@ -11,7 +13,7 @@ public class FirstPersonController : MonoBehaviour
 
     #region Camera Movement Variables
 
-    public Camera playerCamera;
+    public CinemachineCamera playerCamera;
 
     public float fov = 60f;
     public bool invertCamera = false;
@@ -129,7 +131,7 @@ public class FirstPersonController : MonoBehaviour
         crosshairObject = GetComponentInChildren<Image>();
 
         // Set internal variables
-        playerCamera.fieldOfView = fov;
+        SetFOV(fov);
         originalScale = transform.localScale;
         jointOriginalPos = joint.localPosition;
 
@@ -187,6 +189,19 @@ public class FirstPersonController : MonoBehaviour
         }
 
         #endregion
+    }
+
+    private float GetFOV()
+    {
+        return playerCamera != null ? playerCamera.Lens.FieldOfView : fov;
+    }
+
+    private void SetFOV(float newFov)
+    {
+        if (playerCamera == null) return;
+        var lens = playerCamera.Lens;      // Lens is a struct; edit a copy
+        lens.FieldOfView = newFov;
+        playerCamera.Lens = lens;          // assign back
     }
 
     float camRotation;
@@ -252,11 +267,11 @@ public class FirstPersonController : MonoBehaviour
             // Lerps camera.fieldOfView to allow for a smooth transistion
             if(isZoomed)
             {
-                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, zoomFOV, zoomStepTime * Time.deltaTime);
+                SetFOV(Mathf.Lerp(GetFOV(), zoomFOV, zoomStepTime * Time.deltaTime));
             }
             else if(!isZoomed && !isSprinting)
             {
-                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, fov, zoomStepTime * Time.deltaTime);
+                SetFOV(Mathf.Lerp(GetFOV(), fov, zoomStepTime * Time.deltaTime));
             }
         }
 
@@ -270,7 +285,7 @@ public class FirstPersonController : MonoBehaviour
             if(isSprinting)
             {
                 isZoomed = false;
-                playerCamera.fieldOfView = Mathf.Lerp(playerCamera.fieldOfView, sprintFOV, sprintFOVStepTime * Time.deltaTime);
+                SetFOV(Mathf.Lerp(GetFOV(), sprintFOV, sprintFOVStepTime * Time.deltaTime));
 
                 // Drain sprint remaining while sprinting
                 if(!unlimitedSprint)
