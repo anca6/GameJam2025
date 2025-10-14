@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7559187598905790990}
-  - component: {fileID: 5854311947819774299}
   m_Layer: 0
   m_Name: ButtonsPuzzle
   m_TagString: Untagged
@@ -38,28 +37,6 @@ Transform:
   - {fileID: 5526990647680622481}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5854311947819774299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1435732013031251074}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94d735f0aac53194fa66703a8b10a374, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  buttonsRoot: {fileID: 0}
-  spawnWindowSeconds: 1.25
-  perButtonMinDelay: 0.05
-  perButtonMaxDelay: 0.25
-  useUnscaledTime: 1
-  clickMask:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  raycastMaxDistance: 100
-  manageCursor: 1
 --- !u!1 &3311329269502268832
 GameObject:
   m_ObjectHideFlags: 0

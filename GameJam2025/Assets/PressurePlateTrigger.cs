@@ -15,7 +15,6 @@ public class PressurePlateTrigger : MonoBehaviour
     public CinemachineBrain brain;
 
     [Header("Events")]
-    public EventManagerGame eventManager;
     public bool startEventsAfterLock = true;
 
     [Header("Behaviour")]
@@ -118,9 +117,6 @@ public class PressurePlateTrigger : MonoBehaviour
         _active = startWithCamA ? camA : camB;
         ApplyPriorities(_active);
 
-        // Start events now (each will arm and countdown with its own 3–5s delay)
-        if (startEventsAfterLock && eventManager)
-            eventManager.TriggerRandomEvents();
     }
 
     void Toggle()
