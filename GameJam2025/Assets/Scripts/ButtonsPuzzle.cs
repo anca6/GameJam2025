@@ -105,6 +105,8 @@ public class ButtonsPuzzle : MonoBehaviour
 
         SetRunUIVisible(false);
         SetEndMessagesVisible(false, false);
+
+        _music.start();
     }
 
     void OnDisable()
