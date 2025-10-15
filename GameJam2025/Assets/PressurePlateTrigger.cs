@@ -1,5 +1,6 @@
-using UnityEngine;
+using FMODUnity;
 using Unity.Cinemachine;
+using UnityEngine;
 using BlendStyle = Unity.Cinemachine.CinemachineBlendDefinition.Styles;
 
 [RequireComponent(typeof(Collider))]
@@ -12,6 +13,9 @@ public class PressurePlateTrigger : MonoBehaviour
     public CinemachineCamera camB;
     [Tooltip("Main Camera’s CinemachineBrain")]
     public CinemachineBrain brain;
+
+    [Header("Events")]
+    public bool startEventsAfterLock = true;
 
     [Header("Behaviour")]
     public KeyCode toggleKey = KeyCode.E;
@@ -28,6 +32,10 @@ public class PressurePlateTrigger : MonoBehaviour
     public float jerkyMaxAngle = 1.75f;
     [Tooltip("What fraction happens BEFORE the cut (rest happens after).")]
     [Range(0.0f, 0.8f)] public float preCutPortion = 0.25f;
+
+    public ButtonsPuzzle puzzle;           // drag your puzzle here
+    public bool useOverrideDelay = false;
+    public float overrideDelaySeconds = 2f;
 
     // internals
     Rigidbody _rb;
@@ -61,16 +69,22 @@ public class PressurePlateTrigger : MonoBehaviour
 
         if (brain)
         {
-            _origBlend = brain.DefaultBlend; // CM3
+            _origBlend = brain.DefaultBlend;
             _hasOrigBlend = true;
         }
     }
+    
 
     void OnTriggerEnter(Collider other)
     {
         if (!IsPlayer(other)) return;
         _playerInside = true;
         LockAndShowInitial();
+
+        if (!puzzle) return;
+
+        if (useOverrideDelay) puzzle.TriggerStart(overrideDelaySeconds);
+        else puzzle.TriggerStart();
     }
 
     void OnTriggerExit(Collider other)
@@ -109,10 +123,10 @@ public class PressurePlateTrigger : MonoBehaviour
             _rb.angularVelocity = Vector3.zero;
         }
 
-        // LERP into first cutaway (do NOT touch brain blend here)
         gameplayCam.Priority = inactivePriority;
         _active = startWithCamA ? camA : camB;
         ApplyPriorities(_active);
+
     }
 
     void Toggle()
