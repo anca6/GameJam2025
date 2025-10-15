@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 #endif
 
 public class ButtonsPuzzle : MonoBehaviour
@@ -39,9 +41,23 @@ public class ButtonsPuzzle : MonoBehaviour
     public UnityEvent OnSolved;
     public UnityEvent OnFailed;
 
+    [Header("Win → Return To Start")]
+    [SerializeField] private bool returnToStartOnSolve = true;
+    [SerializeField, Min(0f)] private float solveReturnDelay = 3f;
+    [SerializeField] private string startSceneName = "StartScreen"; // set this to your title scene
+
+    [Header("Fail - Reload")]
+    [SerializeField] private bool reloadOnFail = true;
+    [SerializeField, Min(0f)] private float reloadDelay = 1.5f;
+
     [Header("Debug / HUD")]
     public bool debugLogs = true;
     public bool showTimerHud = true;
+    [SerializeField] private TextMeshProUGUI eventName;
+    [SerializeField] private TextMeshProUGUI timerText;
+
+    [Tooltip("Shown when solved (assign a GO with your 'Crisis averted' text).")]
+    [SerializeField] private GameObject solvedMessageObject;
 
     // --- internals ---
     readonly List<Transform> _buttons = new();      // direct children only
@@ -65,6 +81,9 @@ public class ButtonsPuzzle : MonoBehaviour
             var child = buttonsRoot.GetChild(i)?.gameObject;
             if (child && child.activeSelf) child.SetActive(false);
         }
+
+        SetRunUIVisible(false);
+        SetEndMessagesVisible(false, false);
     }
 
     void OnDisable()
@@ -139,6 +158,10 @@ public class ButtonsPuzzle : MonoBehaviour
         _timeLeft = Mathf.Max(0.01f, timeLimitSeconds);
         _running = true;
 
+        SetRunUIVisible(true);
+        SetEndMessagesVisible(false, false);
+        UpdateTimerUI(); // initial value
+
         if (manageCursor)
         {
             _prevLock = Cursor.lockState;
@@ -158,6 +181,8 @@ public class ButtonsPuzzle : MonoBehaviour
         _timeLeft -= useUnscaledTimeForTimer ? Time.unscaledDeltaTime : Time.deltaTime;
         if (_timeLeft <= 0f) { Fail(); return; }
 
+        UpdateTimerUI();
+
         if (MouseDownThisFrame() && TryGetHitButtonIndex(out int i))
         {
             if (_active.Remove(i))
@@ -175,17 +200,50 @@ public class ButtonsPuzzle : MonoBehaviour
         if (!_running) return;
         _running = false;
         RestoreCursor();
+
+        SetRunUIVisible(false);
+        SetEndMessagesVisible(true, false); // show success text
+
         if (debugLogs) Debug.Log($"[ButtonsPuzzle] SOLVED with {_timeLeft:0.00}s left.");
         OnSolved?.Invoke();
+
+        if (returnToStartOnSolve)
+            StartCoroutine(CoReturnToStartAfterDelay(solveReturnDelay));
     }
+
 
     void Fail()
     {
         if (!_running) return;
         _running = false;
         RestoreCursor();
+
+        SetRunUIVisible(false);
+        SetEndMessagesVisible(false, true); //  show fail, not success
+
         if (debugLogs) Debug.Log("[ButtonsPuzzle] FAILED (timer expired).");
         OnFailed?.Invoke();
+
+        if (reloadOnFail)
+            StartCoroutine(CoReloadAfterDelay(reloadDelay));
+    }
+
+    System.Collections.IEnumerator CoReloadAfterDelay(float delay)
+    {
+        if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
+
+        if (GameManager.Instance) GameManager.Instance.ReloadCurrentScene();
+        else SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    System.Collections.IEnumerator CoReturnToStartAfterDelay(float delay)
+    {
+        if (delay > 0f) yield return new WaitForSecondsRealtime(delay);
+
+        if (GameManager.Instance && !string.IsNullOrWhiteSpace(startSceneName))
+            GameManager.Instance.LoadSceneByName(startSceneName);
+        else if (!string.IsNullOrWhiteSpace(startSceneName))
+            SceneManager.LoadScene(startSceneName);
     }
 
     void RestoreCursor()
@@ -234,19 +292,24 @@ public class ButtonsPuzzle : MonoBehaviour
 #endif
     }
 
-    void OnGUI()
+    // ---------- UI helpers ----------
+    void SetRunUIVisible(bool visible)
     {
-        if (!showTimerHud || !_running) return;
-        var label = $"Active: {_active.Count}  |  Time: {_timeLeft:0.0}s";
-        var size = GUI.skin.label.CalcSize(new GUIContent(label));
-        var rect = new Rect(10, 10, size.x + 12, size.y + 8);
+        if (eventName) eventName.gameObject.SetActive(visible);
+        if (timerText) timerText.gameObject.SetActive(visible);
+    }
 
-        var prev = GUI.color;
-        GUI.color = new Color(0, 0, 0, 0.5f);
-        GUI.Box(rect, GUIContent.none);
-        GUI.color = prev;
+    void SetEndMessagesVisible(bool solvedOn, bool failedOn)
+    {
+        if (solvedMessageObject) solvedMessageObject.SetActive(solvedOn);
+        // if (failedMessageObject) failedMessageObject.SetActive(failedOn);
+    }
 
-        rect.x += 6; rect.y += 4;
-        GUI.Label(rect, label);
+    void UpdateTimerUI()
+    {
+        if (!timerText) return;
+
+        timerText.text = _timeLeft.ToString("0.0");
+
     }
 }
