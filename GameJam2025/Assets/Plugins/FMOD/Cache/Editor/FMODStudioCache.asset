@@ -20,6 +20,30 @@ MonoBehaviour:
   - Name: Desktop
     Value: 494
   Exists: 1
+--- !u!114 &-8739957701240952409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/hiss/Hiss activation
+  m_EditorClassIdentifier: 
+  Name: Hiss activation
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 3605596677
+    data2: 4119727207
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
 --- !u!114 &-8681462847615299235
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63,12 +87,12 @@ MonoBehaviour:
   Path: ../../../../Desktop/Gamejam 2025 FMOD/FMOD/Build/Desktop/Master.strings.bank
   Name: Master.strings
   StudioPath: bank:/Master.strings
-  lastModified: 638961223611368841
+  lastModified: 638961353921530681
   FileSizes:
   - Name: Desktop
-    Value: 2682
+    Value: 2896
   Exists: 1
---- !u!114 &-6539633694570057209
+--- !u!114 &-6116557069441243815
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -78,23 +102,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
-  m_Name: event:/env/amb/amb_oneshots
+  m_Name: event:/SFX/int/button_press
   m_EditorClassIdentifier: 
-  Path: event:/env/amb/amb_oneshots
+  Path: event:/SFX/int/button_press
   Guid:
-    Data1: -58244652
-    Data2: 1113788384
-    Data3: -124934513
-    Data4: 1738250608
+    Data1: 1696153
+    Data2: 1292237704
+    Data3: 1876019381
+    Data4: -63880914
   Banks:
   - {fileID: -1957611682784800790}
-  IsStream: 1
+  IsStream: 0
   Is3D: 0
-  IsOneShot: 0
+  IsOneShot: 1
   Parameters: []
   MinDistance: 1
   MaxDistance: 20
-  Length: 22682
+  Length: 0
 --- !u!114 &-4014826375981189710
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,7 +134,7 @@ MonoBehaviour:
   Path: ../../../../Desktop/Gamejam 2025 FMOD/FMOD/Build/Desktop/Master.bank
   Name: Master
   StudioPath: bank:/Master
-  lastModified: 638961223611324454
+  lastModified: 638961353921489225
   FileSizes:
   - Name: Desktop
     Value: 4130
@@ -157,10 +181,10 @@ MonoBehaviour:
   Path: ../../../../Desktop/Gamejam 2025 FMOD/FMOD/Build/Desktop/sfx.bank
   Name: sfx
   StudioPath: bank:/sfx
-  lastModified: 638961273383839051
+  lastModified: 638961359374587643
   FileSizes:
   - Name: Desktop
-    Value: 4122976
+    Value: 3600992
   Exists: 1
 --- !u!114 &-1817967439179202257
 MonoBehaviour:
@@ -309,13 +333,14 @@ MonoBehaviour:
   - {fileID: 3908277525872554693}
   - {fileID: 6118602009084236167}
   - {fileID: 8529260718604154157}
-  - {fileID: -6539633694570057209}
+  - {fileID: -6116557069441243815}
+  - {fileID: 5415646250660336141}
   EditorParameters: []
   MasterBanks:
   - {fileID: -4014826375981189710}
   StringsBanks:
   - {fileID: -7493995456394177676}
-  cacheTime: 638961273383839051
+  cacheTime: 638961359374587643
   cacheVersion: 131632
 --- !u!114 &42986500759907146
 MonoBehaviour:
@@ -449,6 +474,54 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 0
+--- !u!114 &1916682995587648024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/death_sound/Death trigger
+  m_EditorClassIdentifier: 
+  Name: Death trigger
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 3920590419
+    data2: 1264666868
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
+--- !u!114 &2393969229190849441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fecb8ef7f94ca804a8ab72049b86782e, type: 3}
+  m_Name: parameter:/amb_loops/Ambience fadeout
+  m_EditorClassIdentifier: 
+  Name: Ambience fadeout
+  StudioPath: 
+  Min: 0
+  Max: 1
+  Default: 0
+  ID:
+    data1: 538854544
+    data2: 1068950209
+  Type: 0
+  IsGlobal: 0
+  Labels: []
+  Exists: 1
 --- !u!114 &2485206777639931456
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -550,7 +623,8 @@ MonoBehaviour:
   IsStream: 0
   Is3D: 1
   IsOneShot: 0
-  Parameters: []
+  Parameters:
+  - {fileID: -8739957701240952409}
   MinDistance: 1
   MaxDistance: 20
   Length: 937
@@ -605,7 +679,8 @@ MonoBehaviour:
   IsStream: 1
   Is3D: 0
   IsOneShot: 1
-  Parameters: []
+  Parameters:
+  - {fileID: 1916682995587648024}
   MinDistance: 1
   MaxDistance: 20
   Length: 10071
@@ -663,6 +738,33 @@ MonoBehaviour:
   MinDistance: 0
   MaxDistance: 0
   Length: 0
+--- !u!114 &5415646250660336141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ceb653cd98e289a4e8697a1af55201f2, type: 3}
+  m_Name: event:/env/amb/amb_oneshots
+  m_EditorClassIdentifier: 
+  Path: event:/env/amb/amb_oneshots
+  Guid:
+    Data1: -58244652
+    Data2: 1113788384
+    Data3: -124934513
+    Data4: 1738250608
+  Banks:
+  - {fileID: -1957611682784800790}
+  IsStream: 1
+  Is3D: 0
+  IsOneShot: 0
+  Parameters: []
+  MinDistance: 1
+  MaxDistance: 20
+  Length: 10500
 --- !u!114 &5784784637334394631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -710,13 +812,14 @@ MonoBehaviour:
     Data4: 963649808
   Banks:
   - {fileID: -1957611682784800790}
-  IsStream: 1
+  IsStream: 0
   Is3D: 0
   IsOneShot: 0
-  Parameters: []
+  Parameters:
+  - {fileID: 2393969229190849441}
   MinDistance: 1
   MaxDistance: 20
-  Length: 7600
+  Length: 5800
 --- !u!114 &6118602009084236167
 MonoBehaviour:
   m_ObjectHideFlags: 0
