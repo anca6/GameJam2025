@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using FMOD.Studio;
+using FMODUnity;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -59,6 +61,22 @@ public class ButtonsPuzzle : MonoBehaviour
     [Tooltip("Shown when solved (assign a GO with your 'Crisis averted' text).")]
     [SerializeField] private GameObject solvedMessageObject;
 
+    [Header("Music (FMOD)")]
+    [SerializeField] private EventReference musicEvent;     // drag your music event here
+    [SerializeField] private string intensityParam = "Intensity";
+
+    // Step-ups based on **time left** (in seconds) → what Intensity value to set
+    [SerializeField] private float step1TimeLeft = 20f;  // when timeLeft <= 20s
+    [SerializeField] private float step1Value = 1f;
+
+    [SerializeField] private float step2TimeLeft = 10f;  // when timeLeft <= 10s
+    [SerializeField] private float step2Value = 2f;
+
+    [SerializeField] private float step3TimeLeft = 5f;   // when timeLeft <= 5s
+    [SerializeField] private float step3Value = 3f;
+
+    [SerializeField] private float startIntensity = 0f;  // at puzzle start
+
     // --- internals ---
     readonly List<Transform> _buttons = new();      // direct children only
     readonly HashSet<int> _active = new();          // indexes of active buttons
@@ -70,6 +88,9 @@ public class ButtonsPuzzle : MonoBehaviour
 
     CursorLockMode _prevLock;
     bool _prevVisible;
+
+    EventInstance _music;
+    bool _musicCreated;
 
     void Awake()
     {
@@ -92,6 +113,11 @@ public class ButtonsPuzzle : MonoBehaviour
         _armed = false;
         _active.Clear();
         _indexOf.Clear();
+
+        // FMOD: make sure music stops if object gets disabled
+       // StopAndReleaseMusic();                        // FMOD
+
+        StopMusic();
     }
 
     // Call from your pressure plate
@@ -172,6 +198,17 @@ public class ButtonsPuzzle : MonoBehaviour
 
         if (debugLogs)
             Debug.Log($"[ButtonsPuzzle] START → total:{total}  active:{_active.Count}  time:{_timeLeft:0.00}s");
+
+        // start FMOD music
+        if (!musicEvent.IsNull && !_musicCreated)
+        {
+            _music = RuntimeManager.CreateInstance(musicEvent);
+            // music can be 2D; attaching is fine too
+            RuntimeManager.AttachInstanceToGameObject(_music, transform, GetComponent<Rigidbody>());
+            _music.setParameterByName(intensityParam, startIntensity);
+            _music.start();
+            _musicCreated = true;
+        }
     }
 
     void Update()
@@ -182,6 +219,8 @@ public class ButtonsPuzzle : MonoBehaviour
         if (_timeLeft <= 0f) { Fail(); return; }
 
         UpdateTimerUI();
+
+        UpdateMusicIntensity();
 
         if (MouseDownThisFrame() && TryGetHitButtonIndex(out int i))
         {
@@ -194,6 +233,30 @@ public class ButtonsPuzzle : MonoBehaviour
             }
         }
     }
+
+    void UpdateMusicIntensity()
+    {
+        if (!_musicCreated) return;
+
+        float val = startIntensity;
+
+        // NOTE: these are "time left" breakpoints. Smallest time wins.
+        if (_timeLeft <= step3TimeLeft) val = step3Value;
+        else if (_timeLeft <= step2TimeLeft) val = step2Value;
+        else if (_timeLeft <= step1TimeLeft) val = step1Value;
+
+        _music.setParameterByName(intensityParam, val);
+    }
+
+    void StopMusic()
+    {
+        if (!_musicCreated) return;
+        _music.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
+        _music.release();
+        _musicCreated = false;
+    }
+
+
 
     void Solve()
     {
@@ -209,6 +272,8 @@ public class ButtonsPuzzle : MonoBehaviour
 
         if (returnToStartOnSolve)
             StartCoroutine(CoReturnToStartAfterDelay(solveReturnDelay));
+
+        StopMusic();
     }
 
 
@@ -226,6 +291,8 @@ public class ButtonsPuzzle : MonoBehaviour
 
         if (reloadOnFail)
             StartCoroutine(CoReloadAfterDelay(reloadDelay));
+
+        StopMusic();
     }
 
     System.Collections.IEnumerator CoReloadAfterDelay(float delay)
