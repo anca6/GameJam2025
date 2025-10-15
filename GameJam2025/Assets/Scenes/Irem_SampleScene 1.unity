@@ -1716,11 +1716,15 @@ PrefabInstance:
       objectReference: {fileID: 162061770}
     - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
       propertyPath: maxActiveButtons
-      value: 17
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
       propertyPath: minActiveButtons
-      value: 10
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: timeLimitSeconds
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
       propertyPath: solvedMessageObject
