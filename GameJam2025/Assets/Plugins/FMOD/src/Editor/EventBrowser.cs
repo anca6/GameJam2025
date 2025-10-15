@@ -260,21 +260,21 @@ namespace FMODUnity
 
                 if ((TypeFilter & TypeFilter.Event) != 0)
                 {
-                    CreateSubTree(L10n.Tr("Events"), EventPrefix,
+                    CreateSubTree("Events", EventPrefix,
                         EventManager.Events.Where(e => e.Path.StartsWith(EventPrefix)), e => e.Path);
 
-                    CreateSubTree(L10n.Tr("Snapshots"), SnapshotPrefix,
+                    CreateSubTree("Snapshots", SnapshotPrefix,
                         EventManager.Events.Where(e => e.Path.StartsWith(SnapshotPrefix)), s => s.Path);
                 }
 
                 if ((TypeFilter & TypeFilter.Bank) != 0)
                 {
-                    CreateSubTree(L10n.Tr("Banks"), BankPrefix, EventManager.Banks, b => b.StudioPath);
+                    CreateSubTree("Banks", BankPrefix, EventManager.Banks, b => b.StudioPath);
                 }
 
                 if ((TypeFilter & TypeFilter.Parameter) != 0)
                 {
-                    CreateSubTree(L10n.Tr("Global Parameters"), ParameterPrefix,
+                    CreateSubTree("Global Parameters", ParameterPrefix,
                         EventManager.Parameters, p => p.StudioPath);
                 }
 
@@ -489,15 +489,15 @@ namespace FMODUnity
 
                     if (item.Data is EditorEventRef)
                     {
-                        title = L10n.Tr("New FMOD Studio Emitter");
+                        title = "New FMOD Studio Emitter";
                     }
                     else if (item.Data is EditorBankRef)
                     {
-                        title = L10n.Tr("New FMOD Studio Bank Loader");
+                        title = "New FMOD Studio Bank Loader";
                     }
                     else if (item.Data is EditorParamRef)
                     {
-                        title = L10n.Tr("New FMOD Studio Global Parameter Trigger");
+                        title = "New FMOD Studio Global Parameter Trigger";
                     }
 
                     DragAndDrop.StartDrag(title);
@@ -912,38 +912,38 @@ namespace FMODUnity
             {
                 AffirmResources();
 
-                DrawCopyableTextField(L10n.Tr("Full Path"), selectedEvent.Path);
+                DrawCopyableTextField("Full Path", selectedEvent.Path);
 
-                DrawTextField(L10n.Tr("Banks"), string.Join(", ", selectedEvent.Banks.Select(x => x.Name).ToArray()));
+                DrawTextField("Banks", string.Join(", ", selectedEvent.Banks.Select(x => x.Name).ToArray()));
 
                 EditorGUILayout.BeginHorizontal();
-                DrawTextField(L10n.Tr("Panning"), selectedEvent.Is3D ? "3D" : "2D");
-                DrawTextField(L10n.Tr("Oneshot"), selectedEvent.IsOneShot.ToString());
+                DrawTextField("Panning", selectedEvent.Is3D ? "3D" : "2D");
+                DrawTextField("Oneshot", selectedEvent.IsOneShot.ToString());
 
                 TimeSpan t = TimeSpan.FromMilliseconds(selectedEvent.Length);
-                DrawTextField(L10n.Tr("Length"), selectedEvent.Length > 0 ? string.Format("{0:D2}:{1:D2}:{2:D3}", t.Minutes, t.Seconds, t.Milliseconds) : "N/A");
+                DrawTextField("Length", selectedEvent.Length > 0 ? string.Format("{0:D2}:{1:D2}:{2:D3}", t.Minutes, t.Seconds, t.Milliseconds) : "N/A");
 
-                if (!isNarrow) DrawTextField(L10n.Tr("Streaming"), selectedEvent.IsStream.ToString());
+                if (!isNarrow) DrawTextField("Streaming", selectedEvent.IsStream.ToString());
                 EditorGUILayout.EndHorizontal();
-                if (isNarrow) DrawTextField(L10n.Tr("Streaming"), selectedEvent.IsStream.ToString());
+                if (isNarrow) DrawTextField("Streaming", selectedEvent.IsStream.ToString());
             }
 
             public void DrawSnapshot(EditorEventRef eventRef)
             {
                 AffirmResources();
 
-                DrawCopyableTextField(L10n.Tr("Full Path"), eventRef.Path);
+                DrawCopyableTextField("Full Path", eventRef.Path);
             }
 
             public void DrawBank(EditorBankRef bank)
             {
                 AffirmResources();
 
-                DrawCopyableTextField(L10n.Tr("Full Path"), "bank:/" + bank.Name);
+                DrawCopyableTextField("Full Path", "bank:/" + bank.Name);
 
                 string[] SizeSuffix = { "B", "KB", "MB", "GB" };
 
-                GUILayout.Label(L10n.Tr("Platform Bank Sizes"), textFieldNameStyle);
+                GUILayout.Label("Platform Bank Sizes", textFieldNameStyle);
 
                 EditorGUI.indentLevel++;
 
@@ -968,11 +968,11 @@ namespace FMODUnity
             {
                 AffirmResources();
 
-                DrawCopyableTextField(L10n.Tr("Name"), parameter.Name);
+                DrawCopyableTextField("Name", parameter.Name);
                 DrawCopyableTextField("ID",
                     string.Format("{{ data1 = 0x{0:x8}, data2 = 0x{1:x8} }}", parameter.ID.data1, parameter.ID.data2));
-                DrawTextField(L10n.Tr("Minimum"), parameter.Min.ToString());
-                DrawTextField(L10n.Tr("Maximum"), parameter.Max.ToString());
+                DrawTextField("Minimum", parameter.Min.ToString());
+                DrawTextField("Maximum", parameter.Max.ToString());
             }
 
             private void DrawCopyableTextField(string name, string value)
@@ -1080,7 +1080,7 @@ namespace FMODUnity
 
                     forceRepaint = true;
                 }
-                if (GUILayout.Button(new GUIContent(openIcon, L10n.Tr("Show Event in FMOD Studio")), buttonStyle, GUILayout.ExpandWidth(false)))
+                if (GUILayout.Button(new GUIContent(openIcon, "Show Event in FMOD Studio"), buttonStyle, GUILayout.ExpandWidth(false)))
                 {
                     string cmd = string.Format("studio.window.navigateTo(studio.project.lookup(\"{0}\"))", selectedEvent.Guid);
                     EditorUtils.SendScriptCommand(cmd);
@@ -1246,7 +1246,7 @@ namespace FMODUnity
                 }
 
                 showGlobalParameters = selectedEvent.GlobalParameters.Count > 0 &&
-                    EditorGUI.Foldout(EditorGUILayout.GetControlRect(), showGlobalParameters, L10n.Tr("Global Parameters"));
+                    EditorGUI.Foldout(EditorGUILayout.GetControlRect(), showGlobalParameters, "Global Parameters");
 
                 foreach (EditorParamRef paramRef in selectedEvent.GlobalParameters)
                 {
@@ -1562,10 +1562,12 @@ namespace FMODUnity
         public void ChooseEvent(SerializedProperty property)
         {
             BeginInspectorPopup(property, TypeFilter.Event);
-            string path = property.GetEventReferencePath();
-            if (!string.IsNullOrEmpty(path))
+
+            SerializedProperty pathProperty = property.FindPropertyRelative("Path");
+
+            if (!string.IsNullOrEmpty(pathProperty.stringValue))
             {
-                treeView.JumpToEvent(path);
+                treeView.JumpToEvent(pathProperty.stringValue);
             }
         }
 
@@ -1677,7 +1679,7 @@ namespace FMODUnity
 
                     if (data is EditorEventRef)
                     {
-                        Undo.SetCurrentGroupName(L10n.Tr("Add Studio Event Emitter"));
+                        Undo.SetCurrentGroupName("Add Studio Event Emitter");
 
                         StudioEventEmitter emitter = Undo.AddComponent<StudioEventEmitter>(target);
 
@@ -1687,7 +1689,7 @@ namespace FMODUnity
                     }
                     else if (data is EditorBankRef)
                     {
-                        Undo.SetCurrentGroupName(L10n.Tr("Add Studio Bank Loader"));
+                        Undo.SetCurrentGroupName("Add Studio Bank Loader");
 
                         StudioBankLoader loader = Undo.AddComponent<StudioBankLoader>(target);
                         loader.Banks = new List<string>();
@@ -1695,7 +1697,7 @@ namespace FMODUnity
                     }
                     else // data is EditorParamRef
                     {
-                        Undo.SetCurrentGroupName(L10n.Tr("Add Studio Global Parameter Trigger"));
+                        Undo.SetCurrentGroupName("Add Studio Global Parameter Trigger");
 
                         StudioGlobalParameterTrigger trigger = Undo.AddComponent<StudioGlobalParameterTrigger>(target);
                         trigger.Parameter = (data as EditorParamRef).Name;
@@ -1730,7 +1732,7 @@ namespace FMODUnity
                     emitter.EventReference.Path = path;
                     emitter.EventReference.Guid = eventRef.Guid;
 
-                    Undo.RegisterCreatedObjectUndo(newObject, L10n.Tr("Create Studio Event Emitter"));
+                    Undo.RegisterCreatedObjectUndo(newObject, "Create Studio Event Emitter");
                 }
                 else if (data is EditorBankRef)
                 {
@@ -1740,7 +1742,7 @@ namespace FMODUnity
                     loader.Banks = new List<string>();
                     loader.Banks.Add((data as EditorBankRef).Name);
 
-                    Undo.RegisterCreatedObjectUndo(newObject, L10n.Tr("Create Studio Bank Loader"));
+                    Undo.RegisterCreatedObjectUndo(newObject, "Create Studio Bank Loader");
                 }
                 else // data is EditorParamRef
                 {
@@ -1751,7 +1753,7 @@ namespace FMODUnity
                     StudioGlobalParameterTrigger trigger = newObject.AddComponent<StudioGlobalParameterTrigger>();
                     trigger.Parameter = name;
 
-                    Undo.RegisterCreatedObjectUndo(newObject, L10n.Tr("Create Studio Global Parameter Trigger"));
+                    Undo.RegisterCreatedObjectUndo(newObject, "Create Studio Global Parameter Trigger");
                 }
 
                 Ray ray = HandleUtility.GUIPointToWorldRay(Event.current.mousePosition);
