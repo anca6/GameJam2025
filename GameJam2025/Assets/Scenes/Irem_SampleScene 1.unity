@@ -945,7 +945,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
-  - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
+  - {fileID: 2100000, guid: ef9c05638488eb34683c1c28f73c1a06, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -1674,6 +1674,11 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -3519236620850571632, guid: ddb8d7e798294144c97a495a8da55f4f, type: 3}
+--- !u!1 &985727813 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4459864850019384750, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+  m_PrefabInstance: {fileID: 1717312602}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1020046064 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: -6948632732658236248, guid: ddb8d7e798294144c97a495a8da55f4f, type: 3}
@@ -2040,12 +2045,43 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 4459864850019384740, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
   m_PrefabInstance: {fileID: 1717312602}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 985727813}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d90ba6530d9bfda47abb4610956b2f44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1212904334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 985727813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6610d2e704f1648819acc8d7460285, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  CollisionTag: 
+  EventReference:
+    Guid:
+      Data1: 100373030
+      Data2: 1293330990
+      Data3: -529017959
+      Data4: -1309029326
+    Path: event:/char/player/footsteps
+  Event: 
+  EventPlayTrigger: 1
+  EventStopTrigger: 0
+  AllowFadeout: 1
+  TriggerOnce: 0
+  Preload: 0
+  NonRigidbodyVelocity: 0
+  Params: []
+  OverrideAttenuation: 0
+  OverrideMinDistance: 1
+  OverrideMaxDistance: 20
 --- !u!1001 &1219003006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2111,6 +2147,26 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 162061770}
     - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: step1TimeLeft
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: step2TimeLeft
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: step3TimeLeft
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: failSound.Path
+      value: event:/SFX/gameplay/death_sound
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: musicEvent.Path
+      value: event:/music/Bop Layer 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
       propertyPath: maxActiveButtons
       value: 25
       objectReference: {fileID: 0}
@@ -2126,6 +2182,38 @@ PrefabInstance:
       propertyPath: solvedMessageObject
       value: 
       objectReference: {fileID: 371017689}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: failSound.Guid.Data1
+      value: -2062400913
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: failSound.Guid.Data2
+      value: 1196005884
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: failSound.Guid.Data3
+      value: 1518824123
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: failSound.Guid.Data4
+      value: -1990645660
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: musicEvent.Guid.Data1
+      value: 2009098416
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: musicEvent.Guid.Data2
+      value: 1202251522
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: musicEvent.Guid.Data3
+      value: 1764417672
+      objectReference: {fileID: 0}
+    - target: {fileID: 7560947282788820042, guid: 66ba232f2284b4a4bbea6fec658d323f, type: 3}
+      propertyPath: musicEvent.Guid.Data4
+      value: -1549959836
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2711,7 +2799,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -53, y: 18}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1415787041 stripped
@@ -3309,6 +3397,9 @@ PrefabInstance:
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4459864850019384750, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1212904334}
     - targetCorrespondingSourceObject: {fileID: 4459864851310106424, guid: 6bacecc4f3df9584198879c73a6b6c36, type: 3}
       insertIndex: 1
       addedObject: {fileID: 1106156816}
@@ -3958,7 +4049,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
-  - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
+  - {fileID: 2100000, guid: ef9c05638488eb34683c1c28f73c1a06, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4094,7 +4185,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
-  - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
+  - {fileID: 2100000, guid: ef9c05638488eb34683c1c28f73c1a06, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4383,7 +4474,7 @@ MonoBehaviour:
     Path: event:/music/Bop Layer 1
   Event: 
   EventPlayTrigger: 3
-  EventStopTrigger: 0
+  EventStopTrigger: 4
   AllowFadeout: 1
   TriggerOnce: 1
   Preload: 0
@@ -4777,9 +4868,9 @@ Transform:
   m_GameObject: {fileID: 2325979960856870389}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -297.85, y: 0.6588526, z: 1.184593}
-  m_LocalScale: {x: 10, y: 10, z: 10}
-  m_ConstrainProportionsScale: 1
+  m_LocalPosition: {x: -172.3, y: 0.6588526, z: -4.24}
+  m_LocalScale: {x: 300, y: 20, z: 20}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 7112833265289226555}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4848,7 +4939,7 @@ MeshRenderer:
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
-  - {fileID: 2100000, guid: 2f92cb8b94ecfec4394cdf910a1320c9, type: 2}
+  - {fileID: 2100000, guid: ef9c05638488eb34683c1c28f73c1a06, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

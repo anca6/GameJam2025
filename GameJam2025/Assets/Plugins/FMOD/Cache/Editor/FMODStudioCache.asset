@@ -181,10 +181,10 @@ MonoBehaviour:
   Path: ../../../../Desktop/Gamejam 2025 FMOD/FMOD/Build/Desktop/sfx.bank
   Name: sfx
   StudioPath: bank:/sfx
-  lastModified: 638961359374587643
+  lastModified: 638961391206113498
   FileSizes:
   - Name: Desktop
-    Value: 3600992
+    Value: 3335168
   Exists: 1
 --- !u!114 &-1817967439179202257
 MonoBehaviour:
@@ -340,7 +340,7 @@ MonoBehaviour:
   - {fileID: -4014826375981189710}
   StringsBanks:
   - {fileID: -7493995456394177676}
-  cacheTime: 638961359374587643
+  cacheTime: 638961391206113498
   cacheVersion: 131632
 --- !u!114 &42986500759907146
 MonoBehaviour:
