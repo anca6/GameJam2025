@@ -77,6 +77,8 @@ public class ButtonsPuzzle : MonoBehaviour
 
     [SerializeField] private float startIntensity = 0f;  // at puzzle start
 
+    [SerializeField] private EventReference failSound;
+
     // --- internals ---
     readonly List<Transform> _buttons = new();      // direct children only
     readonly HashSet<int> _active = new();          // indexes of active buttons
@@ -90,6 +92,7 @@ public class ButtonsPuzzle : MonoBehaviour
     bool _prevVisible;
 
     EventInstance _music;
+    EventInstance failSoundInstance;
     bool _musicCreated;
 
     void Awake()
@@ -295,6 +298,14 @@ public class ButtonsPuzzle : MonoBehaviour
             StartCoroutine(CoReloadAfterDelay(reloadDelay));
 
         StopMusic();
+
+        // start FMOD music
+        if (!failSound.IsNull)
+        {
+            failSoundInstance = RuntimeManager.CreateInstance(failSound);
+            RuntimeManager.AttachInstanceToGameObject(failSoundInstance, transform, GetComponent<Rigidbody>());
+            failSoundInstance.start();
+        }
     }
 
     System.Collections.IEnumerator CoReloadAfterDelay(float delay)
